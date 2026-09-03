@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>POS Registers</ion-title>
+    <ion-buttons slot="end">
+      <ion-spinner *ngIf="isLoading$ | async" name="dots"></ion-spinner>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid fixed>
+    <!-- Active Shift Orders & Status Widget -->
+    <ng-container *ngIf="activeSession$ | async as activeSession">
+      <ion-row class="ion-margin-bottom">
+        <ion-col size="12">
+          <ion-card class="active-shift-card">
+            <ion-card-header>
+              <ion-card-title>Active Shift Summary</ion-card-title>
+              <ion-card-subtitle>
+                Started at {{ activeSession.opened_at | date:'shortTime' }} | Opening Float: ${{ activeSession.opening_float || 0 }}
+              </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <div class="shift-stats-row">
+                <div class="stat-box">
+                  <span class="stat-label">Orders Processed</span>
+                  <span class="stat-val">{{ (activeSession.orders || []).length }}</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-label">Shift Revenue</span>
+                  <span class="stat-val">
+                    ${{ getShiftTotal(activeSession.orders) | number:'1.2-2' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Shift Orders List -->
+              <div class="shift-orders-section ion-margin-top" *ngIf="activeSession.orders?.length">
+                <h5>Recent Shift Orders</h5>
+                <ion-list lines="inset">
+                  <ion-item *ngFor="let order of activeSession.orders">
+                    <ion-label>
+                      <h3>Order #{{ order.display_id || (order.id | slice:0:6) }}</h3>
+                      <p>{{ order.created_at | date:'shortTime' }}</p>
+                    </ion-label>
+                    <ion-note slot="end" color="primary">
+                      ${{ (order.total || 0) | number:'1.2-2' }}
+                    </ion-note>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+
+    <ion-row>
+      <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let register of registers$ | async">
+        
+        <ion-card class="register-card" 
+                  [ngClass]="{'is-open': register.status === 'open', 'is-closed': register.status !== 'open'}"
+                  (click)="handleRegisterClick(register)">
+          
+          <ion-card-header>
+            <div class="card-header-flex">
+              <ion-card-title>{{ register.name }}</ion-card-title>
+              <div class="card-actions" (click)="$event.stopPropagation()">
+                <ion-button fill="clear" size="small" color="medium" (click)="promptEditRegister(register, $event)">
+                  <ion-icon slot="icon-only" name="create"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" size="small" color="danger" (click)="promptDeleteRegister(register, $event)">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </ion-card-header>
+
+          <ion-card-content>
+            <div class="status-indicator">
+              <ion-badge [color]="register.status === 'open' ? 'success' : 'medium'">
+                {{ register.status | uppercase }}
+              </ion-badge>
+            </div>
+            
+            <div class="shift-action-prompt ion-margin-top ion-text-center">
+              <ng-container *ngIf="register.status === 'open'">
+                <ion-icon name="log-out" size="large" color="danger"></ion-icon>
+                <p>Tap to Cash Out & Close Shift</p>
+              </ng-container>
+              
+              <ng-container *ngIf="register.status !== 'open'">
+                <ion-icon name="log-in" size="large" color="primary"></ion-icon>
+                <p>Tap to Open Shift</p>
+              </ng-container>
+            </div>
+          </ion-card-content>
+
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Floating Action Button for Adding New Register -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="promptCreateRegister()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

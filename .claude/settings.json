@@ -1,0 +1,24 @@
+{
+  "extraKnownMarketplaces": {
+    "nx-claude-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "nrwl/nx-ai-agents-config"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "nx@nx-claude-plugins": true
+  },
+  "mcpServers": {
+    "medusa": {
+      "url": "https://docs.medusajs.com/mcp"
+    },
+    "sandbox": {
+      "network": {
+        "allowedDomains": [
+          "www.google-analytics.com"
+        ]
+      }
+    }
+  }

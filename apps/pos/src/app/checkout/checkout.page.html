@@ -1,0 +1,129 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cart"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Checkout</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <!-- Order Summary -->
+      <ion-col size="6" *ngIf="cartViewState$ | async as cartViewState">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Order Summary</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let item of cartViewState.cart?.items">
+                <ion-label>
+                  <h2>{{ item.title }}</h2>
+                  <p>Qty: {{ item.quantity }}</p>
+                </ion-label>
+                <div slot="end">
+                  {{ (item.total || 0) | currency:cartViewState.cart?.currency_code }}
+                </div>
+              </ion-item>
+            </ion-list>
+            
+            <div style="margin-top: 16px; font-size: 1.2rem; font-weight: bold; text-align: right;">
+              Total: {{ (cartViewState.cart?.total || 0) | currency:cartViewState.cart?.currency_code }}
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Payment & Fulfillment Methods -->
+      <ion-col size="6" *ngIf="checkoutViewState$ | async as checkoutViewState">
+        <!-- Fulfillment Mode Card -->
+        <ion-card class="ion-margin-bottom">
+          <ion-card-header>
+            <ion-card-title>Fulfillment Type</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-segment [(ngModel)]="fulfillmentMode" (ionChange)="onFulfillmentModeChange()">
+              <ion-segment-button value="instore">
+                <ion-label>In-Store Handover</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="delivery">
+                <ion-label>Deliver to Address</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+
+            <!-- Delivery Address Form -->
+            <div *ngIf="fulfillmentMode === 'delivery'" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+              <ion-item lines="inset">
+                <ion-label position="stacked">Recipient Name</ion-label>
+                <ion-input [(ngModel)]="deliveryForm.name" placeholder="Full Name"></ion-input>
+              </ion-item>
+              <ion-item lines="inset">
+                <ion-label position="stacked">Street Address</ion-label>
+                <ion-input [(ngModel)]="deliveryForm.address" placeholder="e.g. 123 Main St"></ion-input>
+              </ion-item>
+              <ion-row>
+                <ion-col size="6">
+                  <ion-item lines="inset">
+                    <ion-label position="stacked">City</ion-label>
+                    <ion-input [(ngModel)]="deliveryForm.city" placeholder="City"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-item lines="inset">
+                    <ion-label position="stacked">Postal Code</ion-label>
+                    <ion-input [(ngModel)]="deliveryForm.postalCode" placeholder="Postal Code"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              <ion-item lines="inset">
+                <ion-label position="stacked">Phone Number</ion-label>
+                <ion-input [(ngModel)]="deliveryForm.phone" placeholder="Phone for courier"></ion-input>
+              </ion-item>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Payment Card -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>In-Store Payment (Instant Capture)</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            
+            <div *ngIf="checkoutViewState.loading" style="padding: 20px; text-align: center;">
+              Loading payment options...
+            </div>
+            
+            <div *ngIf="checkoutViewState.error" style="padding: 20px; color: red;">
+              {{ checkoutViewState.error }}
+            </div>
+
+            <div *ngIf="!checkoutViewState.loading && !checkoutViewState.error" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+              
+              <ion-button 
+                expand="block" 
+                size="large" 
+                color="success"
+                (click)="payWithCash()">
+                <ion-icon name="cash-outline" slot="start"></ion-icon>
+                Pay with Cash
+              </ion-button>
+
+              <ion-button 
+                expand="block" 
+                size="large" 
+                color="primary"
+                (click)="payWithCredit()">
+                <ion-icon name="card-outline" slot="start"></ion-icon>
+                Pay with Card Terminal
+              </ion-button>
+
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

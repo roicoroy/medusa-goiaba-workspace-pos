@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "nx-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "nx",
+        "mcp"
+      ]
+    },
+    "mcpServers": {
+      "medusa": {
+        "url": "https://docs.medusajs.com/mcp"
+      }
+    },
+    "contextFileName": "AGENTS.md"
+  }

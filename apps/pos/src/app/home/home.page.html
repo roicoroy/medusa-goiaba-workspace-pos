@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Goiaba POS
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/shift" color="primary">
+        Shift
+      </ion-button>
+      <app-region-select></app-region-select>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="start()" expand="block" fill="clear" shape="round">
+          Start
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

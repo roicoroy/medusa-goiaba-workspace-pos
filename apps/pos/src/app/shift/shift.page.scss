@@ -1,0 +1,61 @@
+.register-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  &.is-open {
+    border-top: 4px solid var(--ion-color-success);
+  }
+
+  &.is-closed {
+    border-top: 4px solid var(--ion-color-medium);
+  }
+
+  .card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    ion-card-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 4px;
+      
+      ion-button {
+        --padding-start: 4px;
+        --padding-end: 4px;
+        margin: 0;
+      }
+    }
+  }
+
+  ion-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    .status-indicator {
+      margin-bottom: auto;
+    }
+    
+    .shift-action-prompt {
+      p {
+        margin: 8px 0 0;
+        font-weight: 500;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
